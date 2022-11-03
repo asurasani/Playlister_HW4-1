@@ -55,7 +55,7 @@ function SongCard(props) {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             draggable="true"
-            onClick={handleClick}
+            onDoubleClick={handleClick}
         >
             {index + 1}.
             <a

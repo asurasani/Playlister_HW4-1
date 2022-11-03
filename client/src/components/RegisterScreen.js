@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState, React } from 'react';
 import AuthContext from '../auth'
 import Copyright from './Copyright'
 
@@ -12,21 +12,55 @@ import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Modal from '@mui/material/Modal';
+import AlertTitle from '@mui/material/AlertTitle';
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
+
+
 
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
+    const { error, setError} = useState(false);
+    const [open, setOpen] = useState(false);
+    const{errorMessage, setErrorMessage} = useState("");    
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        auth.registerUser(
+        setOpen(auth.registerUser(
             formData.get('firstName'),
             formData.get('lastName'),
             formData.get('email'),
             formData.get('password'),
-            formData.get('passwordVerify')
-        );
+            formData.get('passwordVerify'))?handleOpen:null);
+        // auth.registerUser(
+        //     formData.get('firstName'),
+        //     formData.get('lastName'),
+        //     formData.get('email'),
+        //     formData.get('password'),
+        //     formData.get('passwordVerify')
+        // ).catch((err) =>{
+        //     setErrorMessage(err.response?.data?.errorMessage);
+        //     setError(true);
+        //     open = {handleOpen};
+        // });
     };
+
+    const handleClose = () => setOpen(false);
+    const handleOpen = () => setOpen(true);
 
     return (
             <Container component="main" maxWidth="xs">
@@ -103,12 +137,28 @@ export default function RegisterScreen() {
                         </Grid>
                         <Button
                             type="submit"
+                            onSubmit={handleSubmit}
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Sign Up
                         </Button>
+                        <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                            >
+                            <Box sx={style}>
+                            <Button onClick={handleClose}>X</Button>
+                                <Alert severity="warning">
+                                    <AlertTitle>Warning</AlertTitle>
+                                    {console.log(auth.message)}
+                                    {auth.message}
+                                </Alert>
+                            </Box>
+                        </Modal>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link href="/login/" variant="body2">

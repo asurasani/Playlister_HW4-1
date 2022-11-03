@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import api from './auth-request-api'
 
+
 const AuthContext = createContext();
 console.log("create AuthContext: " + AuthContext);
 
@@ -10,13 +11,16 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    DENY_USER: "DENY_USER"
 }
+
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
-        loggedIn: false
+        loggedIn: false,
+        message: null
     });
     const history = useHistory();
 
@@ -48,7 +52,13 @@ function AuthContextProvider(props) {
             case AuthActionType.REGISTER_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: true
+                    loggedIn: true,
+                })
+            }
+            case AuthActionType.DENY_USER: {
+                return setAuth({
+                    loggedIn: false,
+                    message: payload.message
                 })
             }
             default:
@@ -70,15 +80,26 @@ function AuthContextProvider(props) {
     }
 
     auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
-        const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
-        if (response.status === 200) {
+        try{      
+            const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+            }
+        }catch(e){
+            console.log(e.response.data.errorMessage);
             authReducer({
-                type: AuthActionType.REGISTER_USER,
+                type: AuthActionType.DENY_USER,
                 payload: {
-                    user: response.data.user
+                    message: e.response.data.errorMessage
                 }
             })
-            history.push("/login");
+            return false;
         }
     }
 

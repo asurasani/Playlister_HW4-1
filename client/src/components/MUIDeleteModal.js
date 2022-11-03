@@ -26,12 +26,12 @@ export default function MUIDeleteModal() {
         store.deleteMarkedList();
     }
     function handleCloseModal(event) {
-        store.unmarkListForDeletion();
+        store.hideModals();
     }
 
     return (
         <Modal
-            open={store.listMarkedForDeletion !== null}
+            open={store.currentModal == "DELETE_LIST"}
         >
             <Box sx={style}>
                 <div className="modal-dialog">

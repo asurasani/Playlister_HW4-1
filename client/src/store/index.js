@@ -307,6 +307,7 @@ function GlobalStoreContextProvider(props) {
     store.markListForDeletion = function (id) {
         async function getListToDelete(id) {
             let response = await api.getPlaylistById(id);
+            console.log(response);
             if (response.data.success) {
                 let playlist = response.data.playlist;
                 storeReducer({
@@ -320,7 +321,8 @@ function GlobalStoreContextProvider(props) {
     store.deleteList = function (id) {
         async function processDelete(id) {
             let response = await api.deletePlaylistById(id);
-            if (response.data.success) {
+            console.log(response);
+            if (response.status === 200) {
                 store.loadIdNamePairs();
                 history.push("/");
             }

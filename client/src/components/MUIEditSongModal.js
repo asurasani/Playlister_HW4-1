@@ -49,16 +49,13 @@ export default function MUIEditSongModal() {
 
     return (
         <Modal
-            open={store.listMarkedForDeletion !== null}
+            open={store.currentModal == "EDIT_SONG"}
         >
             <Box sx={style}>
             <div
-            id="edit-song-modal"
-            className="modal is-visible"
-            data-animation="slideInOutLeft">
-            <div
                 id='edit-song-root'
-                className="modal-root">
+                className="modal-root"
+                data-animation="slideInOutLeft">
                 <div
                     id="edit-song-modal-header"
                     className="modal-north">Edit Song</div>
@@ -102,7 +99,6 @@ export default function MUIEditSongModal() {
                         onClick={handleCancelEditSong} />
                 </div>
             </div>
-        </div>
             </Box>
         </Modal>
     );
